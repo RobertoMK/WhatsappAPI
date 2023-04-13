@@ -33,9 +33,11 @@ namespace WhatsappAPI.Controllers
 
             //puppeteer script start --------------------------------------------
             var page = await browser.NewPageAsync();
-            await page.GoToAsync(parameters);
+
             try
             {
+                await page.SetUserAgentAsync("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3641.0 Safari/537.36");
+                await page.GoToAsync(parameters);
                 var sendMessage = page.WaitForSelectorAsync("[data-testid=\"conversation-compose-box-input\"]").Result;
                 Thread.Sleep(1000);
                 await page.ClickAsync("[data-testid=\"conversation-compose-box-input\"]");
@@ -43,10 +45,11 @@ namespace WhatsappAPI.Controllers
                 await page.Keyboard.PressAsync("Enter");
                 Thread.Sleep(1000);
                 await browser.CloseAsync();
-            } catch (WaitTaskTimeoutException ex)
+            } catch (Exception ex)
             {
-                //await page.ScreenshotAsync();
-                Console.WriteLine(ex.ToString());
+                var ts = new DateTime().ToString();
+                await page.ScreenshotAsync(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "errorScreen_" + ts + ".jpg").Replace(@"\", @"\\"));
+                _logger.LogError(ex.ToString());
             }
 
             //puppeteer script end --------------------------------------------
