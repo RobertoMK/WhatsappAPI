@@ -1,3 +1,5 @@
+using WhatsappAPI.Ioc;
+
 namespace WhatsappAPI
 {
     public class Program
@@ -8,13 +10,15 @@ namespace WhatsappAPI
 
             builder.Services.AddControllers();
 
+            builder.Services.NativeInjector();
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
             {
                 builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
             }));
-
+            //builder.Services.AddBrowserInitialization();
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -31,6 +35,12 @@ namespace WhatsappAPI
 
 
             app.MapControllers();
+            //app.UseBrowserInitialization();
+            /*var logged = false;
+            Console.WriteLine("Initializing client...");
+            while (!logged) { logged = AuthHelper.getInstance().startProfile().Result; }*/
+
+            //TODO: refactor this Helper as a Middleware.
 
             app.Run();
         }

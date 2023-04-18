@@ -2,7 +2,7 @@
 {
     public class Message
     {
-        public string number { get; set; }
+        public List<string> number { get; set; }
         public string message { get; set; }
 
 
