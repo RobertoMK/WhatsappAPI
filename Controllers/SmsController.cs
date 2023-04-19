@@ -48,25 +48,22 @@ namespace WhatsappAPI.Controllers
             var apiLogin = _configuration.GetValue<string>("SmsKey:login");
             url = string.Concat(url, "?acao=sendsms&login=", "", "&token=", "", "&numero=", number, "&msg=", Uri.EscapeDataString(m));
             
-            var response = client.GetAsync(url).Result;
-            
-            if(response != null) {
-                var contentStream = response.Content.ReadAsStreamAsync().Result;
+            try {
+                var response = client.GetFromJsonAsync<Status>(url).Result;
+                if (response is { }) {
 
-                try
-                {
-                    var json = System.Text.Json.JsonSerializer.DeserializeAsync<Status>(contentStream, new System.Text.Json.JsonSerializerOptions { IgnoreNullValues = true, PropertyNameCaseInsensitive = true }).Result;
-
-                    if (!json.status.Equals("success"))
-                    {
+                    if (!response.status.Equals("success")) {
                         
                     }
                 }
-                catch (JsonException ex)
-                {
-                    _logger.LogError("Bad response from SMS server");
-                }
+            }catch (JsonException ex) {
+                _logger.LogError("Bad response from SMS server");
             }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{ex.Message}");
+            }
+            
         }
     }
 }
